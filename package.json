@@ -1,6 +1,6 @@
 {
   "name": "dsh-notify",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Desktop notifications for DeepSeek Harness: alert you the moment an agent stops — reply finished, question asked, or approval requested — and click through to the exact conversation in the dsh web UI. 当 AI 停止回复 / 向你提问 / 请求批准时发送桌面通知并一键跳回对应对话。",
   "license": "MIT",
   "keywords": [
