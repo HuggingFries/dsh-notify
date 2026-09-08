@@ -24,9 +24,14 @@ children are filtered out so delegation fan-out does not spam you):
   popups on Chrome/Edge).
 - **Click it** → dsh web comes to the foreground and opens the exact session
   (`ctx.sessions.open`).
-- If the page is in the foreground and focused, popups are suppressed by default
-  (you are already watching) — a **Settings → General** row can disable that
-  ("仅离开页面时弹系统通知 / Desktop notification only while away").
+- **Smart quiet rule** — the only silent case is when you are looking at the very
+  conversation the notice belongs to (page visible + focused + that session open
+  in this window). Every other situation notifies:
+  - the page is hidden / unfocused (you stepped away), or
+  - the page is open but you are working in **another conversation** — e.g. you
+    are coding in dialog A while dialog B finishes or asks a question; the popup
+    appears and clicking it jumps precisely into dialog B.
+  - Test notifications from the Settings row bypass the quiet rule.
 - If desktop notifications are denied/unavailable, a small **in-page toast** is
   shown instead so nothing is silently lost.
 
@@ -48,7 +53,10 @@ dsh web
 
 First use: open **Settings → General → 桌面通知 · Desktop notifications** and click
 **开启通知权限 / Enable notifications** (one-time browser permission), then use the
-`测试 · done / question / approval` buttons to verify each channel.
+`测试 · done / question / approval` buttons to verify each channel. The row's
+per-kind toggles (回复完成 / 向你提问 / 请求批准) turn individual kinds on and off;
+the quiet rule itself is fixed (see above), so there is no separate "away only"
+switch.
 
 ## How it works
 
@@ -73,8 +81,11 @@ This package is a regular dual-face dsh plugin, structurally identical to
   (`window.__ModuleLoader__.load`), requires only `react` and
   `@deepseek-ai/dsh-client-runtime/client`. It subscribes to the SSE feed, shows
   desktop notifications with click-to-session, renders the Settings row (per-kind
-  toggles + permission + test buttons), and mounts the in-page toast fallback into
-  the `shell.overlay` slot. Preferences live in `localStorage`
+  toggles + permission + test buttons), mounts the in-page toast fallback into
+  the `shell.overlay` slot, and keeps an invisible occupant in the session-scoped
+  `conversation.input.dock` slot whose `sessionId` prop feeds the quiet rule
+  ("am I currently looking at the conversation this notice belongs to?").
+  Preferences live in `localStorage`
   (`dsh-notify:config`, `dsh-notify:shown`), matching the browser-side preference
   boundary (the Host settings wire only exposes allowlisted namespaces).
 
